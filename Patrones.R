@@ -100,3 +100,6 @@ turtle_do({
   lineas.paralelas(500, 200, 2, 120)
 })
 
+#aridquest
+
+funcion()
