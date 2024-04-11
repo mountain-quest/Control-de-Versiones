@@ -100,3 +100,21 @@ turtle_do({
   lineas.paralelas(500, 200, 2, 120)
 })
 
+#######espiral mountain-quest
+espiral <- function(largoLinea) {
+  if (largoLinea > 0) {
+    turtle_forward(largoLinea)
+    turtle_right(10)
+    espiral(largoLinea+0.1)
+  }
+  invisible(NULL)
+}
+
+turtle_init(width = 500,height = 500, mode = "clip")
+turtle_do({
+  turtle_setpos(x = 250, y = 250)
+  turtle_col("pink")
+  espiral(0.1)
+})
+
+
