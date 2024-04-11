@@ -1,0 +1,360 @@
+# 1. Efecto de una droga en el peso de las ratas
+# ¿Impacto en el peso (gramos)?
+# H0: muRA = muRD
+# HA: muRA =! muRD
+# Con un 5% de significancia
+Ratas <- data.frame(
+  "RA" = c(200.1, 190.9, 192.7, 213, 241.4,
+           196.9, 172.2, 185.5, 205.2, 193.7),
+  "RD" = c(392.9, 393.2, 345.1, 393, 434,
+           427.9, 422, 383.9, 392.3, 352.1))
+DR <- (Ratas$RA - Ratas$RD)
+DR
+nRatas <- 10
+muDR <- mean(DR)
+muDR
+# -194.48
+sdDR <- sd(DR)
+sdDR
+# 29.4647
+
+# Es una t-pareada por ser los mismos
+# individuos, sólo en diferentes momentos
+
+tRatas <- muDR/(sdDR/sqrt(nRatas))
+tRatas
+# -20.87243
+
+#Calculando t de tablas para dos colas
+VCD <- qt(0.025,9,lower.tail=FALSE)
+# 2.262157
+VCI <- qt(0.025,9,lower.tail=TRUE)
+# -2.262157
+
+# Calculando los intervalos de confianza
+nc95 <- qt(.025, 9, lower.tail=FALSE) 
+nc95
+# 2.262157
+
+IIR <- muDR + (nc95*(sdDR/sqrt(nRatas)))
+IIR
+# -173.4022
+
+ISR <- muDR - (nc95*(sdDR/sqrt(nRatas)))
+ISR
+# -215.5578
+
+# Calculando el p-value
+
+pt(tRatas,9,lower.tail=TRUE)*2
+
+t.test(Ratas$RA, Ratas$RD, paired=TRUE)
+# Paired t-test
+# data:  Ratas$RA and Ratas$RD
+# t = -20.872, df = 9, p-value = 6.228e-09
+# alternative hypothesis: true mean difference is not equal to 0
+# 95 percent confidence interval:
+# -215.5578 -173.4022
+# sample estimates:
+# mean difference 
+# -194.48 
+
+#Valores criticos con nivel de significancia 5%, analisis de dos colas.
+
+# Nivel de significancia
+alpha <- 0.05
+alpha
+
+# Grados de libertad
+df <- 9
+
+# Valor crítico para la cola izquierda
+crit_val_izq <- qt(alpha/2, df)
+crit_val_izq
+# -2.262157
+
+# Valor crítico para la cola derecha
+crit_val_der <- qt(1 - alpha/2, df)
+crit_val_der
+# 2.262157
+
+# Imprimir los valores críticos
+print(crit_val_izq)
+print(crit_val_der)
+
+# Gráfica valores críticos
+
+# Función para la densidad de la distribución t
+densidad_t <- function(x) {
+  dt(x, df)
+}
+
+densidad_t <- function(x) {
+  dt(x, df)
+}
+
+library(ggplot2)
+
+ggplot(data.frame(x = c(-25, 4)), aes(x)) +
+  stat_function(fun = densidad_t, n = 1000) +
+  geom_area(stat = "function", fun = densidad_t, fill = "red", xlim = c(-25, VCI)) +
+  geom_area(stat = "function", fun = densidad_t, fill = "red", xlim = c(VCD, 4)) +
+  geom_vline(aes(xintercept = -20.883), color = "blue", linetype = "dashed") +
+  labs(x = "Valor t", y = "Densidad", title = "Áreas de rechazo para una prueba t de dos colas")
+
+# 2. Intervalo de confianza al 95%
+
+#Nivel de confianza de 95%
+nc95 <- qnorm(.025,0,1,FALSE)
+nc95
+#
+
+### Intervalos
+ici<-(DR)-(nc95*(sqrt(((s1^2)/n1)+((s2^2)/n2))))
+ici
+# [1] -37.72397
+
+ics<-(x1-x2)+(nc95*(sqrt(((s1^2)/n1)+((s2^2)/n2))))
+ics
+# [1] -22.27603
+
+# 3. Días de vacaciones oficinas del gobierno CDMX
+# H0: muV <= 15
+# HA: muV > 15
+nVacaciones <- 100
+mu <- 15
+muV <- 18
+vV <- 9.5
+sdV <- sqrt(vV)
+sdV
+# 3.082207
+eeV <- sdV/sqrt(nVacaciones)
+eeV
+# 0.3082207
+
+tVacaciones <- (muV - mu)/eeV
+tVacaciones
+# 9.733285
+
+#Calculando t de tablas con un alfa de 0.5
+qt(0.05,99,lower.tail=FALSE)
+# 1.660391
+# Se rechaza H0
+t.critico <- 1.660391
+
+#Calculando el p value
+pt(tVacaciones,99,lower.tail=FALSE)
+# 2.08879e-16
+
+densidad_v <- function(x) {
+  dt(x, df)
+}
+
+ggplot(data.frame(x = c(-10, 10)), aes(x)) +
+  stat_function(fun = densidad_t, n = 1000) +
+  geom_area(stat = "function", fun = densidad_t, fill = "red", xlim = c(1.660391, 10)) +
+  geom_vline(aes(xintercept = 9.733285), color = "blue", linetype = "dashed") +
+  labs(x = "Valor t", y = "Densidad", title = "Área de rechazo para una prueba t con una media poblacional conocida")
+
+# 4. Bucle con 10 números aleatorios
+
+# Definir las medias
+medias <- c(0, 10, 20, 30)
+
+# Inicializar la lista
+lista <- list()
+
+
+#función rnorm para generar números aleatorios de una distribución normal
+#El primer argumento de rnorm es el número de números aleatorios que quieres
+#generar
+#El argumento mean es la media de la distribución normal.
+#El bucle for recorre cada elemento del vector medias , y para cada media,
+#genera 10 números aleatorios de una distribución normal con esa media y 
+#los almacena en la lista
+
+
+for (i in 1:length(medias)) {
+  lista[[i]] <- rnorm(10, mean = medias[i])
+}
+
+# Imprimir la lista
+print(lista)
+
+# Revisando si da la media
+R0 <- c(-1.9597794,  2.0350776, -0.1012430,  0.6383290, -0.2951040,  0.3046152,
+        2.2363203,  0.8599373,  0.2522391, -0.2105710)
+mean(R0)
+
+R10 <- c(10.568237,  9.830151,  9.071734, 10.250944,  9.484710, 10.599887,  9.400815,
+         8.384767,  9.047391,  9.803221)
+mean(R10)
+
+R20 <- c(19.01965, 19.61746, 21.70571, 20.50492, 20.56648, 20.65442, 19.84616, 19.14242,
+         21.10858, 20.04613)
+mean(R20)
+
+R30 <- c(28.96599, 30.61549, 29.13822, 29.66950, 30.74440, 31.34596, 31.09868, 29.45139,
+         29.58810, 29.75413)
+mean(R30)
+
+# 5. if-else 
+
+# Función para calcular la media o la moda
+media_o_moda <- function(x) {
+  if(is.numeric(x)) {
+    return(mean(x))
+  } else {
+    tabla <- table(x)
+    moda <- as.character(attributes(tabla)$dimnames[[1]][which.max(tabla)])
+    return(moda)
+  }
+}
+
+categorico <- c("azul", "azul", "rojo", "amarillo", "verde", "verde", "verde")
+numerico <- Peso_i
+
+media_o_moda(Peso_i)
+media_o_moda(categorico)
+
+#      Partes de la función
+
+#1) media_o_moda <- function(x) {...}: Esta línea define una nueva función llamada media_o_moda que toma un argumento, x.
+#2) if(is.numeric(x)) {...}: Esta es una declaración if. Comprueba si x es numérico (es decir, si todos los elementos de x son números). Si es cierto, ejecuta el código dentro de las llaves {...}.
+#3) return(mean(x)): Si x es numérico, esta línea calcula la media de x y luego devuelve ese valor. La función mean() calcula la media.
+#4) else {...}: Esta es la parte else de la declaración if. Si x no es numérico (es decir, si x es categórico), entonces se ejecuta el código dentro de estas llaves {...}.
+#5) tabla <- table(x): Esta línea crea una tabla de frecuencias de x. La función table() cuenta la cantidad de veces que cada valor aparece en x.
+#6) moda <- as.character(attributes(tabla)$dimnames[[1]][which.max(tabla)]): Esta línea encuentra el valor más frecuente (la moda) en x. Primero, encuentra el índice del valor máximo en tabla con which.max(tabla), luego usa ese índice para encontrar el nombre correspondiente con attributes(tabla)$dimnames[[1]]. Finalmente, convierte ese nombre a un carácter con as.character().
+#7) return(moda): Si x es categórico, esta línea devuelve la moda de x.
+
+# 6. Dimorfismo sexual en un gecko, longitud hocico-cloaca
+# 10 machos y 8 hembras
+# ¿Diferencia en la longitud entre los sexos?
+MG <- c(11.3, 11.1, 10.7, 11.0, 12.0, 11.4, 11.2, 11.6,
+        11.7, 11.7)
+HG <- c(11.0, 11.7, 10.5, 10.6, 11.1, 11.1, 10.8, 10.7)
+Geckos <- sort(c(MG, HG))
+Geckos
+Rango_Geckos <- rank(Geckos)
+Geckos <- cbind(Geckos, Rango_Geckos)
+Geckos7
+
+TG <- t.test(MG, HG)
+TG
+
+# Welch Two Sample t-test
+# data:  MG and HG
+# t = 2.3696, df = 15.269, p-value = 0.03139
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+# 0.0440594 0.8209406
+# sample estimates:
+# mean of x mean of y 
+# 11.3700   10.9375 
+
+# Gráfica valores críticos
+
+# Obtiene el valor de t y los grados de libertad
+t_valor <- resultado$statistic
+grados_libertad <- resultado$parameter
+
+# Obtiene los valores críticos para un nivel de significancia del 5%
+critico_inf <- qt(0.025, df = grados_libertad)  # límite inferior
+critico_sup <- qt(0.975, df = grados_libertad)  # límite superior
+
+# Traza la distribución t
+curve(dt(x, df = grados_libertad), from = -4, to = 4, ylab = "Densidad", xlab = "Valor t", main = "Distribución t y valores críticos")
+
+# Añade una línea vertical para el valor de t
+abline(v = t_valor, col = "blue")
+
+# Añade líneas verticales para los valores críticos
+abline(v = critico_inf, col = "red", lty = 2)
+abline(v = critico_sup, col = "red", lty = 2)
+
+#####Gráfico Boxplot
+
+library(ggplot2)
+
+#Hacer dataframe con mis datos
+morfo <- data.frame(muestras = c(rep("LHC_m", length(LHC_m)), rep("LHC_h", length(LHC_h))),
+                    datos = c(LHC_m, LHC_h))
+
+ggplot(data = morfo, aes(x = muestras, y = datos)) +
+  labs(x = "Sexo", 
+       y = expression(paste("LHC (mm) - ", italic("Gecko")))) +
+  geom_boxplot(fill = c("darkorange", "cyan4"), color = "black", 
+               outlier.shape = NA) +
+  geom_jitter(shape = 16, position = position_jitter(0.1), 
+              cex = 5, alpha = 0.7) +
+  scale_color_manual(values = c("black", "black")) +
+  theme(legend.position = "none")
+
+#Análisis de Monte Carlo#
+
+# Calcula la diferencia de las medias observadas
+diff_obs <- mean(LHC_m) - mean(LHC_h)
+
+# Combina los datos
+todos <- c(LHC_m, LHC_h)
+
+# Inicializa un contador para las diferencias extremas
+extreme_diffs <- 0
+
+# Número de permutaciones para el análisis de Monte Carlo
+n_perm <- 10000
+
+# Realiza el análisis de Monte Carlo
+for (i in 1:n_perm) {
+  perm <- sample(todos, size = n_machos + n_hembras)
+  grupo1 <- perm[1:n_machos]
+  grupo2 <- perm[(n_machos+1):(n_machos+n_hembras)]
+  diff_perm <- mean(grupo1) - mean(grupo2)
+  if (abs(diff_perm) >= abs(diff_obs)) {
+    extreme_diffs <- extreme_diffs + 1
+  }
+}
+
+# Calcula el valor p
+p_valor <- extreme_diffs / n_perm
+
+# 7. Patrón de Moire
+library(grid)
+library(TurtleGraphics)
+patron <- function(longitud) {
+  if (longitud > 0) {
+    turtle_forward(longitud)
+    turtle_right(90)
+    patron(longitud-3)
+  }
+  invisible(NULL)
+}
+turtle_init(500, 500, mode="cycle")
+turtle_do({
+  turtle_setpos(x=0, y=0)
+  turtle_param(col="blue", lwd=2)
+  patron(490)
+  turtle_setpos(x=1, y=1)
+  turtle_param(col="green",lwd=2)
+  patron(500)
+})
+
+# 7. Patrón en espiral
+
+library(grid)
+library("TurtleGraphics")
+
+espiral <- function(longitud_linea) {
+  if (longitud_linea > 0) {
+    turtle_forward(longitud_linea)
+    turtle_right(50)
+    espiral(longitud_linea-5)
+  }
+  invisible(NULL)
+}
+turtle_init(500, 500, mode="clip")
+turtle_do({
+  turtle_setpos(x=0, y=0)
+  turtle_param(col="orange", lwd=3)
+  espiral(300)
+})
